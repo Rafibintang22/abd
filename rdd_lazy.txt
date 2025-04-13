@@ -1,0 +1,76 @@
+// ===============================
+// Membaca file CSV sebagai RDD
+// ===============================
+// sc.textFile menghasilkan RDD[String] dari setiap baris dalam file
+val csvRdd = sc.textFile("people.csv")
+
+// Menampilkan semua baris (action)
+csvRdd.collect().foreach(println)
+
+// ===============================
+// Menghapus header & parsing ke Tuple
+// ===============================
+val header = csvRdd.first()
+val dataRdd = csvRdd.filter(row => row != header)  // hapus header
+
+val parsedRdd = dataRdd.map(line => {
+  val cols = line.split(",")
+  val name = cols(0)
+  val age = cols(1).toInt
+  val city = cols(2)
+  (name, age, city)
+})
+
+// ===============================
+// Contoh manipulasi dasar
+// ===============================
+// Filter: ambil yang umurnya di atas 30
+val olderThan30 = parsedRdd.filter{ case (_, age, _) => age > 30 }
+olderThan30.collect().foreach(println)
+
+// Map: ubah ke format string
+val nameOnly = parsedRdd.map{ case (name, _, _) => name }
+nameOnly.collect().foreach(println)
+
+// Reduce: total umur
+val totalAge = parsedRdd.map(_._2).reduce((a, b) => a + b)
+println(s"Total umur: $totalAge")
+
+// Count: berapa banyak orang
+val jumlahOrang = parsedRdd.count()
+println(s"Jumlah orang: $jumlahOrang")
+
+// ===============================
+// Cek jumlah partisi
+// ===============================
+// Catatan: Jumlah partisi default bergantung pada blok HDFS atau partisi lokal (misal 2 core = 2 partisi)
+println(s"Jumlah partisi: ${csvRdd.partitions.size}")
+
+// =======================================
+// Membaca file .txt sebagai RDD[String]
+// =======================================
+val txtRdd = sc.textFile("notes.txt")
+
+// Map: jumlah karakter tiap baris
+val lineLengths = txtRdd.map(line => line.length)
+lineLengths.collect().foreach(println)
+
+// FlatMap: pecah jadi kata
+val words = txtRdd.flatMap(line => line.split(" "))
+words.collect().foreach(println)
+
+// Count kata unik
+val uniqueWords = words.distinct()
+println(s"Jumlah kata unik: ${uniqueWords.count()}")
+
+// ===============================
+// Catatan Pemakaian RDD
+// ===============================
+// Gunakan RDD ketika:
+// - Anda perlu kontrol rendah atas tiap baris data (misal transformasi kompleks per-baris)
+// - Anda memproses data tidak terstruktur (misal file log, teks bebas)
+// - Anda bekerja dengan transformasi functional yang spesifik (misal: filter, reduce, fold, aggregate)
+
+// Gunakan sc.textFile jika:
+// - File berupa teks/csv/json dan belum perlu parsing kolom
+// - Anda ingin kontrol penuh dalam memetakan baris ke bentuk lain (Tuple, case class, dsb)

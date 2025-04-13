@@ -1,0 +1,94 @@
+// ===========================
+// SETUP
+// ===========================
+// Impor SQL & Session
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions._
+
+val spark = SparkSession.builder()
+  .appName("DataFrameExample")
+  .master("local[*]")
+  .getOrCreate()
+
+// Impor implicits untuk .toDF dsb
+import spark.implicits._
+
+// ===========================
+// MEMBACA CSV ke DataFrame
+// ===========================
+val peopleDF = spark.read
+  .option("header", "true")
+  .option("inferSchema", "true")
+  .csv("people.csv")
+
+val jobsDF = spark.read
+  .option("header", "true")
+  .option("inferSchema", "true")
+  .csv("jobs.csv")
+
+// ===========================
+// DESKRIPSI DATA
+// ===========================
+peopleDF.printSchema()
+peopleDF.show()
+
+// Statistik cepat (mean, stddev, min, max)
+peopleDF.describe().show()
+
+// ===========================
+// MANIPULASI DASAR
+// ===========================
+
+// Select kolom
+peopleDF.select("name", "age").show()
+
+// Filter: umur > 30
+peopleDF.filter($"age" > 30).show()
+
+// Tambah kolom baru (umur 5 tahun lagi)
+val updatedAgeDF = peopleDF.withColumn("age_in_5_years", $"age" + 5)
+updatedAgeDF.show()
+
+// ===========================
+// GROUP BY & AGGREGATE
+// ===========================
+
+// Group by kota dan hitung rata-rata umur
+val avgByCity = peopleDF.groupBy("city")
+  .agg(
+    avg("age").alias("avg_age"),
+    count("*").alias("num_people")
+  )
+avgByCity.show()
+
+// ===========================
+// JOIN DATAFRAME
+// ===========================
+// Join by "name"
+val joinedDF = peopleDF.join(jobsDF, "name")
+joinedDF.show()
+
+// Filter setelah join
+joinedDF.filter($"job" === "Engineer").show()
+
+// ===========================
+// SORT & DISTINCT
+// ===========================
+peopleDF.sort($"age".desc).show()
+peopleDF.select("city").distinct().show()
+
+// ===========================
+// CONTOH CHAINING MULTI OPERASI
+// ===========================
+// Cari orang di Bandung yang umurnya < 30, tampilkan namanya dan umur 10 tahun ke depan
+peopleDF
+  .filter($"city" === "Bandung" && $"age" < 30)
+  .withColumn("future_age", $"age" + 10)
+  .select("name", "future_age")
+  .show()
+
+// ===========================
+// CONVERSI KE RDD (bila perlu manipulasi lanjutan manual)
+// ===========================
+val rddAgain = peopleDF.rdd
+rddAgain.collect().foreach(println)

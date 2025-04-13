@@ -1,0 +1,89 @@
+// 1. **List**
+// List adalah struktur data yang **immutable** dan **terurut**.
+// Kapan digunakan: 
+// - Gunakan List ketika urutan elemen penting dan data tidak akan berubah setelah pembuatan (immutable).
+// - Efektif untuk pengolahan data dalam bentuk urutan atau koleksi yang tetap.
+
+// Contoh Penggunaan:
+val myList = List(1, 2, 3, 4, 5)
+println(myList(0))  // Output: 1
+
+// Operasi Manipulasi:
+val evenNumbers = myList.filter(_ % 2 == 0)  // List(2, 4)
+val doubled = myList.map(_ * 2)  // List(2, 4, 6, 8, 10)
+val total = myList.sum  // Output: 15
+
+
+// 2. **Array**
+// Array adalah struktur data yang **mutable** dan memiliki ukuran tetap setelah dideklarasikan.
+// Kapan digunakan:
+// - Gunakan Array ketika kita memerlukan akses langsung ke elemen dan ketika ukuran data sudah diketahui.
+// - Digunakan untuk data yang mungkin akan dimodifikasi, tetapi jumlahnya tetap.
+
+// Contoh Penggunaan:
+val myArray = Array(1, 2, 3, 4, 5)
+println(myArray(2))  // Output: 3
+
+// Manipulasi Elemen:
+myArray(0) = 10
+println(myArray.mkString(", "))  // Output: 10, 2, 3, 4, 5
+
+// Operasi Manipulasi:
+val squared = myArray.map(x => x * x)  // Array(100, 4, 9, 16, 25)
+
+
+// 3. **Map**
+// Map adalah koleksi pasangan **key-value** yang **immutable** dan memungkinkan untuk menyimpan data dalam bentuk pasangan kunci dan nilai.
+// Kapan digunakan:
+// - Gunakan Map saat kita perlu menyimpan data yang berpasangan kunci-nilai dan mencari nilai berdasarkan kunci.
+// - Efektif untuk melakukan pencarian cepat berdasarkan kunci tertentu.
+
+// Contoh Penggunaan:
+val myMap = Map("apple" -> 3, "banana" -> 5, "cherry" -> 7)
+println(myMap("apple"))  // Output: 3
+
+// Menambah elemen baru (immutable):
+val updatedMap = myMap + ("date" -> 2)
+println(updatedMap)  // Output: Map(apple -> 3, banana -> 5, cherry -> 7, date -> 2)
+
+// Operasi Manipulasi:
+val fruitPrices = myMap.map { case (fruit, price) => (fruit, price * 2) }
+println(fruitPrices)  // Output: Map(apple -> 6, banana -> 10, cherry -> 14)
+
+
+// 4. **Tuple**
+// Tuple adalah koleksi yang dapat menyimpan beberapa elemen dengan tipe data yang berbeda dalam satu entitas.
+// Kapan digunakan:
+// - Gunakan Tuple ketika Anda ingin menggabungkan beberapa elemen yang mungkin memiliki tipe data berbeda.
+// - Digunakan saat Anda ingin mengembalikan beberapa nilai sekaligus, seperti dari fungsi.
+
+// Contoh Penggunaan:
+val myTuple = ("apple", 3, 4.5)
+println(myTuple._1)  // Output: apple
+println(myTuple._2)  // Output: 3
+println(myTuple._3)  // Output: 4.5
+
+// Menggunakan Tuple dalam Operasi:
+val swappedTuple = myTuple match {
+  case (fruit, quantity, price) => (price, quantity, fruit)
+}
+println(swappedTuple)  // Output: (4.5,3,apple)
+
+
+// 5. **DataFrame**
+// DataFrame adalah struktur data yang digunakan dalam Spark dan diorganisir dalam bentuk tabel (seperti tabel database atau spreadsheet).
+// Kapan digunakan:
+// - Gunakan DataFrame untuk pengolahan data yang terstruktur dengan skema.
+// - DataFrame mempermudah manipulasi dan analisis data besar dan kompleks dalam Spark.
+
+// Contoh Penggunaan (dengan Spark API):
+val df = spark.read.option("header", true).csv("data.csv")
+df.show()  // Menampilkan seluruh data dalam DataFrame
+println(df.count())  // Menampilkan jumlah baris dalam DataFrame
+
+// Operasi Manipulasi:
+val selectedColumns = df.select("StartStation", "Duration")
+val filteredData = df.filter(df("Duration") > 300)
+
+// Operasi Aksi:
+filteredData.show()  // Melakukan eksekusi untuk menampilkan data yang sudah difilter

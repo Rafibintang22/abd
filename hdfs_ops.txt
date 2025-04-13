@@ -1,0 +1,51 @@
+//=====================================
+// 📦 HDFS: OPERASI FILE & DIREKTORI
+//=====================================
+
+// 🔍 Lihat isi direktori (detail size dan waktu)
+hdfs dfs -ls -h /user/namauser/data
+
+// 📥 Download file dari HDFS ke lokal
+hdfs dfs -get /user/namauser/data/people.csv ~/unduhan/
+
+// 📄 Melihat isi sebagian file (mirip head)
+hdfs dfs -tail /user/namauser/data/people.csv
+
+// ✂️ Menghapus file atau direktori dari HDFS
+hdfs dfs -rm /user/namauser/data/people.csv
+hdfs dfs -rm -r /user/namauser/data/
+
+// 📋 Menyalin file di dalam HDFS
+hdfs dfs -cp /user/namauser/data/people.csv /user/namauser/data/people_backup.csv
+
+// ✏️ Memindahkan (rename) file di HDFS
+hdfs dfs -mv /user/namauser/data/people.csv /user/namauser/data/people_final.csv
+
+// Upload file ke hdfs
+hdfs dfs -put ~/kegiatan_abd/dataset/jobs.csv /user/i20053/dataset/
+
+// ✅ Cek apakah file/direktori ada
+hdfs dfs -test -e /user/namauser/data/people.csv
+echo $?  # hasil 0 jika ada, 1 jika tidak
+
+// 🔍 Cek jumlah block & lokasi tiap block
+hdfs fsck /user/namauser/data/people.csv -files -blocks -locations
+
+// 📊 Cek penggunaan storage (disk usage)
+hdfs dfs -du -h /user/namauser/data/
+
+// 📈 Ukuran folder total
+hdfs dfs -dus /user/namauser/data/
+
+// 🔎 Melihat block size dari file
+hdfs fsck /user/namauser/data/people.csv -files -blocks
+
+// 🧱 Melihat konfigurasi block size default
+hdfs getconf -confKey dfs.blocksize
+# Biasanya hasilnya: 134217728 (128MB)
+
+// 🛑 Cek apakah file corrupt
+hdfs fsck /user/namauser/data/people.csv -files -blocks -locations -openforwrite
+
+// 📃 Cek file tersembunyi (._SUCCESS, .crc, dll.)
+hdfs dfs -ls /user/namauser/data/.*
