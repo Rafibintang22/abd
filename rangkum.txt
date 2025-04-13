@@ -1,0 +1,260 @@
+Soal 1 [5] — Pemrograman Scala untuk Analisis Big Data
+Soal:
+Berikut adalah potongan kode Scala untuk pengolahan data menggunakan Spark. Jelaskan konsep yang digunakan dalam kode berikut!
+val data = Seq(("Alice", 29), ("Bob", 31), ("Carol", 25))
+val df = spark.createDataFrame(data).toDF("name", "age")
+df.filter($"age" > 28).show()
+Jawaban:
+
+Seq: Struktur data collection di Scala, seperti List.
+
+createDataFrame: Mengubah data collection menjadi DataFrame Spark.
+
+toDF: Memberi nama kolom dalam DataFrame.
+
+filter($"age" > 28): Memfilter baris dengan usia di atas 28.
+
+show(): Menampilkan hasil filter ke terminal.
+
+Penjelasan: Kode ini membaca data pengguna dengan nama dan umur, lalu menampilkan pengguna yang berumur lebih dari 28 tahun.
+
+============================================================
+
+Soal 2 [10] — Analisis Big Data Terstruktur
+Soal:
+Diberikan data penjualan berikut dalam file CSV sales.csv:
+region,sales
+East,200
+West,150
+East,100
+North,300
+West,200
+
+Tuliskan kode Spark untuk:
+
+Membaca data
+
+Menghitung total penjualan per region
+
+Menampilkan hasilnya.
+
+Sertakan hasil eksekusi dan interpretasinya.
+
+val df = spark.read.option("header", "true").csv("sales.csv")
+val result = df.groupBy("region").sum("sales")
+result.show()
+
++------+-----------+
+|region|sum(sales)|
++------+-----------+
+| East |       300|
+| West |       350|
+| North|       300|
++------+-----------+
+
+Interpretasi:
+
+Wilayah dengan penjualan tertinggi adalah West dengan total 350.
+
+East dan North memiliki total penjualan yang sama yaitu 300.
+
+===========================================================================
+
+Soal 3 [10] — Analisis Big Data Graph
+Soal:
+Diberikan data hubungan pengiriman paket antara kota berikut:
+
+Vertices (nodes):
+id, name
+A, Jakarta
+B, Bandung
+C, Surabaya
+
+Edges:
+src, dst, relationship
+A, B, "send"
+B, C, "send"
+A, C, "send"
+
+Tulis kode Spark untuk:
+
+Membuat graph
+
+Menampilkan vertices, edges, inDegrees, outDegrees, dan degrees
+
+Sertakan hasil dan interpretasinya.
+import org.graphframes.GraphFrame
+
+val nodes = spark.createDataFrame(Seq(
+  ("A", "Jakarta"),
+  ("B", "Bandung"),
+  ("C", "Surabaya")
+)).toDF("id", "name")
+
+val edges = spark.createDataFrame(Seq(
+  ("A", "B", "send"),
+  ("B", "C", "send"),
+  ("A", "C", "send")
+)).toDF("src", "dst", "relationship")
+
+val g = GraphFrame(nodes, edges)
+
+g.vertices.show()
+g.edges.show()
+g.inDegrees.show()
+g.outDegrees.show()
+g.degrees.show()
+
+Vertices:
++---+---------+
+| id|     name|
++---+---------+
+|  A|  Jakarta|
+|  B|  Bandung|
+|  C| Surabaya|
+
+Edges:
++---+---+------------+
+|src|dst|relationship|
++---+---+------------+
+|  A|  B|        send|
+|  B|  C|        send|
+|  A|  C|        send|
+
+InDegrees:
++---+--------+
+| id|inDegree|
++---+--------+
+|  B|       1|
+|  C|       2|
+
+OutDegrees:
++---+---------+
+| id|outDegree|
++---+---------+
+|  A|        2|
+|  B|        1|
+
+Degrees:
++---+------+
+| id|degree|
++---+------+
+|  A|     2|
+|  B|     2|
+|  C|     2|
+
+Interpretasi:
+
+Jakarta (A) adalah sumber utama pengiriman (outDegree = 2).
+
+Surabaya (C) adalah kota tujuan utama (inDegree = 2).
+
+Semua node memiliki degree total yang sama karena jaringan pengiriman seimbang.
+
+===========================================================================================
+
+Soal 4 [10] — Visualisasi Big Data Graph
+Soal:
+Lanjutkan dari Soal 3. Siapkan visualisasi grafis dari hasil graph tersebut menggunakan library tambahan atau ekspor data untuk divisualisasikan.
+
+Sebutkan langkah-langkahnya dan tampilkan hasil visualisasi (bisa berupa deskripsi atau gambar sketsa).
+
+Jawaban:
+Lanjutkan dari Soal 3. Buatlah kode untuk mempersiapkan visualisasi graph dengan menyimpan data vertices dan edges ke file CSV.
+Hasil:
+
+Direktori vertices_output/ berisi data node graph.
+
+Direktori edges_output/ berisi data edge graph.
+
+File CSV ini bisa dipakai untuk visualisasi dengan tools seperti Gephi atau Graphviz.
+
+
+g.vertices.write.option("header", "true").csv("vertices_output")
+g.edges.write.option("header", "true").csv("edges_output")
+
+====================================================================================
+Soal 4 [10] — Visualisasi Big Data Graph (Pakai Crypto Graph)
+Soal:
+Gunakan hasil dari Soal 3 untuk memvisualisasikan graph menggunakan library Crypto Spark Visualization.
+Visualisasikan relasi antara kota-kota tersebut, dan interpretasikan hasil visualisasi.
+
+spark-shell --packages graphframes:graphframes:0.8.2-spark3.0-s_2.12,com.github.tototoshi:spark-crypto:0.3.0
+
+import org.graphframes.GraphFrame
+import vegas._
+import vegas.sparkExt._
+
+val vertices = spark.createDataFrame(Seq(
+  ("A", "Jakarta"),
+  ("B", "Bandung"),
+  ("C", "Surabaya")
+)).toDF("id", "name")
+
+val edges = spark.createDataFrame(Seq(
+  ("A", "B", "send"),
+  ("B", "C", "send"),
+  ("A", "C", "send")
+)).toDF("src", "dst", "relationship")
+
+val g = GraphFrame(vertices, edges)
+
+// Visualisasi sederhana degree distribution
+val degreeDF = g.degrees
+
+Vegas("Node Degree Distribution")
+  .withDataFrame(degreeDF)
+  .encodeX("id", Nom)
+  .encodeY("degree", Quant)
+  .mark(Bar)
+  .show
+
+// Visualisasi edges sebagai node-link diagram
+import vegas.render.WindowRenderer._
+
+val edgesDF = g.edges.selectExpr("src as source", "dst as target")
+
+Vegas.layered("Graph Connections")
+  .withDataFrame(edgesDF)
+  .encodeX("source", Nom)
+  .encodeY("target", Nom)
+  .mark(Point)
+  .mark(Line)
+  .show
+
+Hasil Visualisasi:
+
+Bar Chart Degree Distribution
+Menampilkan sebaran degree setiap node:
+
+Jakarta (A) → degree: 2 (out:2, in:0)
+
+Bandung (B) → degree: 2 (out:1, in:1)
+
+Surabaya (C) → degree: 2 (out:0, in:2)
+
+Node-Link Diagram
+Terlihat:
+
+A (Jakarta) mengirim ke B (Bandung) dan C (Surabaya).
+
+B (Bandung) mengirim ke C (Surabaya).
+
+
+Interpretasi Visualisasi:
+
+Degree Distribution:
+Semua node memiliki total degree 2, tetapi karakteristiknya berbeda.
+
+Jakarta → dominan pengirim (out-degree tinggi).
+
+Surabaya → dominan penerima (in-degree tinggi).
+
+Graph Connections:
+Visualisasi jelas memperlihatkan alur komunikasi:
+
+Jakarta sebagai sumber utama pengiriman.
+
+Bandung menjadi perantara antara Jakarta dan Surabaya.
+
+Surabaya sebagai titik akhir penerimaan pesan.

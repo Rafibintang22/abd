@@ -74,3 +74,5 @@ println(s"Jumlah kata unik: ${uniqueWords.count()}")
 // Gunakan sc.textFile jika:
 // - File berupa teks/csv/json dan belum perlu parsing kolom
 // - Anda ingin kontrol penuh dalam memetakan baris ke bentuk lain (Tuple, case class, dsb)
+
+

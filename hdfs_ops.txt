@@ -49,3 +49,45 @@ hdfs fsck /user/namauser/data/people.csv -files -blocks -locations -openforwrite
 
 // 📃 Cek file tersembunyi (._SUCCESS, .crc, dll.)
 hdfs dfs -ls /user/namauser/data/.*
+
+// Buat Folder di HDFS
+hdfs dfs -mkdir /data_rusunami
+
+//Sintaks Terminal
+
+//Hapus file:
+rm nama_file.txt
+//Hapus folder dan isinya:
+rm -r nama_folder
+//Pakai -f biar force (tanpa konfirmasi):
+rm -rf nama_folder
+
+
+//Copy file:
+cp file_asal.txt file_tujuan.txt
+//Copy file ke folder:
+cp file_asal.txt nama_folder/
+//Copy folder beserta isinya:
+cp -r folder_asal/ folder_tujuan/
+
+//Pindah file ke folder lain:
+mv file.txt nama_folder/
+//Rename file:
+mv nama_lama.txt nama_baru.txt
+
+//Membuat folder:
+mkdir nama_folder
+//Membuat nested folder sekaligus:
+mkdir -p folder1/folder2/folder3
+
+//Buka atau buat file:
+nano nama_file.txt
+//Ctrl + O untuk save
+//Ctrl + X untuk keluar
+
+//Tampilkan isi file di terminal:
+cat nama_file.txt
+
+
+//clone git
+git clone https://github.com/Rafibintang22/abd

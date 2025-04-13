@@ -1,0 +1,25 @@
+import org.graphframes._
+
+nodes = ambil dr csv
+edges =  ambil dr csv
+
+val g = GraphFrame(nodes,edges)
+
+g.vertices.show()
+
+g.edges.show()
+
+g.inDegrees.show()
+
+g.outDegrees.show()
+
+g.degrees.show()
+
+g.degrees.sort(desc("degree")).show()
+
+g.inDegrees.sort(desc("inDegree")).show()
+
+g.outDegrees.sort(desc("outDegree")).show()
+
+
+
